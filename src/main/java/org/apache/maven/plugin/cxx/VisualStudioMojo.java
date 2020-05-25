@@ -115,14 +115,34 @@ public class VisualStudioMojo extends AbstractLaunchMojo
     private String buildVersion;
     
     /**
-     * Visual verion in visual studio format [ x.y ]
+     * Visual internal version in visual studio format [ x.y ]
      * 9.0 = VS2008
      * 10.0 = VS2010
+     * 15.0 = VS2017
      * 
-     * @since 0.0.6
+     * @since 0.0.7
      */
-    @Parameter( property = "visualstudio.visualstudioVersion", defaultValue = "9.0" )
-    private String visualstudioVersion;
+    @Parameter( property = "visualstudio.visualstudioInternalVersion", defaultValue = "9.0" )
+    private String visualstudioInternalVersion;
+	
+	/**
+     * Visual verbose version in visual studio format [ 2xxx ]
+	 *
+     * @since 0.0.7
+     */
+    @Parameter( property = "visualstudio.visualstudioVerboseVersion", defaultValue = "2017" )
+    private String visualstudioVerboseVersion;
+    
+	/**
+     * Visual Studio Edition
+	 * Community
+     * Professional
+	 * Enterprise
+     * 
+     * @since 0.0.7
+     */
+    @Parameter( property = "visualstudio.visualstudioEdition", defaultValue = "Professional" )
+    private String visualstudioEdition;
     
     protected String visualStudioBuildVersion()
     {
@@ -204,7 +224,9 @@ public class VisualStudioMojo extends AbstractLaunchMojo
     protected String getExecutable()
     {
         HashMap<String, String> valuesMap = new HashMap<String, String>();
-        valuesMap.put( "visualstudioVersion", visualstudioVersion );
+        valuesMap.put( "visualstudioInternalVersion", visualstudioInternalVersion );
+		valuesMap.put( "visualstudioVerboseVersion", visualstudioVerboseVersion );
+		valuesMap.put( "visualstudioEdition", visualstudioEdition );
         StrSubstitutor substitutor = new StrSubstitutor( valuesMap, "$(", ")" );
         
         InputStream batchScriptStream = getClass().getResourceAsStream( "/build.bat" );

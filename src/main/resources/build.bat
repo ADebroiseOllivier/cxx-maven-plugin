@@ -96,13 +96,20 @@ FOR /F "skip=1 tokens=1-6" %%A IN ('WMIC Path Win32_LocalTime Get Day^,Hour^,Min
     )
 )
 
-IF EXIST "%PROGRAMFILES(X86)%\Microsoft Visual Studio $(visualstudioVersion)\VC\vcvarsall.bat" (
-    call "%PROGRAMFILES(X86)%\Microsoft Visual Studio $(visualstudioVersion)\VC\vcvarsall.bat" %6
+IF $(visualstudioInternalVersion) LSS 15.0 (
+	set VCVARSALL_DIR_X86="%PROGRAMFILES(X86)%\Microsoft Visual Studio $(visualstudioInternalVersion)\VC\vcvarsall.bat"
+	set VCVARSALL_DIR="%PROGRAMFILES%\Microsoft Visual Studio $(visualstudioInternalVersion)\VC\vcvarsall.bat"
 ) ELSE (
-    IF EXIST "%PROGRAMFILES%\Microsoft Visual Studio $(visualstudioVersion)\VC\vcvarsall.bat" (
-        call "%PROGRAMFILES%\Microsoft Visual Studio $(visualstudioVersion)\VC\vcvarsall.bat" %6
+	set VCVARSALL_DIR_X86="%PROGRAMFILES(X86)%\Microsoft Visual Studio\$(visualstudioVerboseVersion)\$(visualstudioEdition)\VC\Auxiliary\Build\vcvarsall.bat"
+	set VCVARSALL_DIR="%PROGRAMFILES%\Microsoft Visual Studio\$(visualstudioVerboseVersion)\$(visualstudioEdition)\VC\Auxiliary\Build\vcvarsall.bat"
+)
+IF EXIST %VCVARSALL_DIR_X86% (
+	call %VCVARSALL_DIR_X86% %6
+) ELSE (
+	IF EXIST %VCVARSALL_DIR% (
+		call %VCVARSALL_DIR% %6
     ) ELSE (
-        echo "Microsoft Visual Studio $(visualstudioVersion) not found in [%PROGRAMFILES%] or [%PROGRAMFILES(X86)%]"
+		echo "Microsoft Visual Studio $(visualstudioInternalVersion) not found in [%PROGRAMFILES%] or [%PROGRAMFILES(X86)%]"
         exit /B 1
     )
 )
